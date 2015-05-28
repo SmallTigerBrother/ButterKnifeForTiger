@@ -1,5 +1,12 @@
 package butterknife;
 
+import static butterknife.internal.ButterKnifeProcessor.ANDROID_PREFIX;
+import static butterknife.internal.ButterKnifeProcessor.JAVA_PREFIX;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
@@ -9,14 +16,6 @@ import android.util.Log;
 import android.util.Property;
 import android.view.View;
 import butterknife.internal.ButterKnifeProcessor;
-
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import static butterknife.internal.ButterKnifeProcessor.ANDROID_PREFIX;
-import static butterknife.internal.ButterKnifeProcessor.JAVA_PREFIX;
 
 /**
  * Field and method binding for Android views. Use this class to simplify
@@ -261,34 +260,6 @@ public final class ButterKnife
 	}
 
 	/** DO NOT USE: Exposed for generated code. */
-	public static abstract class ViewBinder<T>
-	{
-		private ArrayList<ViewBinder<T>> superViewBinders;
-		
-		public abstract void bind(Finder finder, T target, Object source);
-
-		public abstract void unbind(T target);
-		
-		public void insertSuperBinder(ViewBinder<T> viewBinder)
-		{
-			if(null == superViewBinders)
-			{
-				superViewBinders = new ArrayList<ButterKnife.ViewBinder<T>>();
-			}
-			superViewBinders.add(0, viewBinder);
-		}
-		
-		public void executeSuperBindMethod(Finder finder, T target, Object source)
-		{
-			if(null != superViewBinders)
-			{
-				for (int i = 0; i < superViewBinders.size(); i++)
-				{
-					superViewBinders.get(i).bind(finder, target, source);
-				}
-			}
-		}
-	}
 
 	/** An action that can be applied to a list of views. */
 	public interface Action<T extends View>

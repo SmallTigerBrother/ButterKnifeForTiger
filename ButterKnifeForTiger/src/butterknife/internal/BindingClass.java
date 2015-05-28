@@ -101,7 +101,7 @@ final class BindingClass
 		builder.append("import butterknife.ButterKnife.Finder;\n");
 		if (parentViewBinder == null)
 		{
-			builder.append("import butterknife.ButterKnife.ViewBinder;\n");
+			builder.append("import butterknife.ViewBinder;\n");
 		}
 		builder.append('\n');
 
