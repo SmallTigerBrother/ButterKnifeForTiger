@@ -9,6 +9,8 @@ import android.util.Log;
 import android.util.Property;
 import android.view.View;
 import butterknife.internal.ButterKnifeProcessor;
+
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -203,7 +205,8 @@ public final class ButterKnife
 			if (view == null)
 			{
 				String name = getContext(source).getResources().getResourceEntryName(id);
-				throw new IllegalStateException("Required view '" + name + "' with ID " + id + " for " + who
+				throw new IllegalStateException("Required view '" + name + "' with ID " + id
+						+ " for " + who
 						+ " was not found. If this view is optional add '@Nullable' annotation.");
 			}
 			return view;
@@ -237,7 +240,8 @@ public final class ButterKnife
 
 		@SuppressWarnings("unchecked")
 		// That's the point.
-		public <T> T castParam(Object value, String from, int fromPosition, String to, int toPosition)
+		public <T> T castParam(Object value, String from, int fromPosition, String to,
+				int toPosition)
 		{
 			try
 			{
@@ -245,9 +249,9 @@ public final class ButterKnife
 			}
 			catch (ClassCastException e)
 			{
-				throw new IllegalStateException("Parameter #" + (fromPosition + 1) + " of method '" + from
-						+ "' was of the wrong type for parameter #" + (toPosition + 1) + " of method '" + to
-						+ "'. See cause for more info.", e);
+				throw new IllegalStateException("Parameter #" + (fromPosition + 1) + " of method '"
+						+ from + "' was of the wrong type for parameter #" + (toPosition + 1)
+						+ " of method '" + to + "'. See cause for more info.", e);
 			}
 		}
 
@@ -257,11 +261,33 @@ public final class ButterKnife
 	}
 
 	/** DO NOT USE: Exposed for generated code. */
-	public interface ViewBinder<T>
+	public static abstract class ViewBinder<T>
 	{
-		void bind(Finder finder, T target, Object source);
+		private ArrayList<ViewBinder<T>> superViewBinders;
+		
+		public abstract void bind(Finder finder, T target, Object source);
 
-		void unbind(T target);
+		public abstract void unbind(T target);
+		
+		public void insertSuperBinder(ViewBinder<T> viewBinder)
+		{
+			if(null == superViewBinders)
+			{
+				superViewBinders = new ArrayList<ButterKnife.ViewBinder<T>>();
+			}
+			superViewBinders.add(0, viewBinder);
+		}
+		
+		public void executeSuperBindMethod(Finder finder, T target, Object source)
+		{
+			if(null != superViewBinders)
+			{
+				for (int i = 0; i < superViewBinders.size(); i++)
+				{
+					superViewBinders.get(i).bind(finder, target, source);
+				}
+			}
+		}
 	}
 
 	/** An action that can be applied to a list of views. */
@@ -433,8 +459,8 @@ public final class ButterKnife
 		}
 	}
 
-	private static ViewBinder<Object> findViewBinderForClass(Class<?> cls) throws IllegalAccessException,
-			InstantiationException
+	public static ViewBinder<Object> findViewBinderForClass(Class<?> cls)
+			throws IllegalAccessException, InstantiationException
 	{
 		ViewBinder<Object> viewBinder = INJECTORS.get(cls);
 		if (viewBinder != null)
@@ -455,6 +481,7 @@ public final class ButterKnife
 			Class<?> viewBindingClass = Class.forName(clsName + ButterKnifeProcessor.SUFFIX);
 			// noinspection unchecked
 			viewBinder = (ViewBinder<Object>) viewBindingClass.newInstance();
+			ButterKnifeExtendByTiger.insertSuperBinds(viewBinder, cls);
 			if (debug)
 				Log.d(TAG, "HIT: Loaded view binder class.");
 		}
@@ -467,7 +494,7 @@ public final class ButterKnife
 		INJECTORS.put(cls, viewBinder);
 		return viewBinder;
 	}
-
+	
 	/** Apply the specified {@code action} across the {@code list} of views. */
 	public static <T extends View> void apply(List<T> list, Action<? super T> action)
 	{
@@ -494,7 +521,8 @@ public final class ButterKnife
 	 * the {@code property}.
 	 */
 	@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-	public static <T extends View, V> void apply(List<T> list, Property<? super T, V> setter, V value)
+	public static <T extends View, V> void apply(List<T> list, Property<? super T, V> setter,
+			V value)
 	{
 		// noinspection ForLoopReplaceableByForEach
 		for (int i = 0, count = list.size(); i < count; i++)
