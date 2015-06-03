@@ -20,6 +20,8 @@ import butterknife.ResourceDimen;
 import butterknife.ResourceDrawable;
 import butterknife.ResourceInt;
 import butterknife.ResourceString;
+import butterknife.tiger.OnPullToRefresh;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -35,6 +37,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -82,7 +85,8 @@ public final class ButterKnifeProcessor extends AbstractProcessor {
       OnLongClick.class, //
       OnPageChange.class, //
       OnTextChanged.class, //
-      OnTouch.class //
+      OnTouch.class, //
+      OnPullToRefresh.class
   );
 
   private Elements elementUtils;
