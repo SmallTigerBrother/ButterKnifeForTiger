@@ -21,6 +21,7 @@ import butterknife.ResourceDrawable;
 import butterknife.ResourceInt;
 import butterknife.ResourceString;
 import butterknife.tiger.OnPullToRefresh;
+import butterknife.tiger.OnQueryText;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -86,7 +87,8 @@ public final class ButterKnifeProcessor extends AbstractProcessor {
       OnPageChange.class, //
       OnTextChanged.class, //
       OnTouch.class, //
-      OnPullToRefresh.class
+      OnPullToRefresh.class,
+      OnQueryText.class
   );
 
   private Elements elementUtils;
